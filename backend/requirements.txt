@@ -4,3 +4,5 @@ python-dotenv==1.0.1
 Werkzeug==3.0.3
 PyJWT==2.8.0
 pytest==8.2.2
+boto3==1.35.99
+gunicorn==23.0.0

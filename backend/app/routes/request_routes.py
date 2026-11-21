@@ -121,11 +121,19 @@ def get_request_responses(request_id: str):
 @request_bp.route("/documents/<category>/<filename>", methods=["GET"])
 @token_required
 def serve_document(category: str, filename: str):
-    """Protected document streaming route."""
-    relative_path = f"uploads/{category}/{filename}"
-    resolved_path = storage_service.get_file_path(relative_path)
+    """Protected document streaming route supporting both local disk and S3 storage."""
+    if category not in {"requisitions", "hospital_licenses", "licenses"}:
+        return jsonify({"success": False, "error": "Invalid document category."}), 404
 
-    if not resolved_path or not resolved_path.exists():
+    relative_path = f"{category}/{filename}"
+    stream_result = storage_service.get_file_stream(relative_path)
+    if not stream_result:
         return jsonify({"success": False, "error": "Document not found or access denied."}), 404
 
-    return send_file(str(resolved_path), as_attachment=False)
+    stream, content_type, download_name = stream_result
+    return send_file(
+        stream,
+        mimetype=content_type,
+        download_name=download_name,
+        as_attachment=False,
+    )

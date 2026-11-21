@@ -7,12 +7,18 @@ def create_app(config_class=Config) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # Enable CORS for React frontend portals (donor, individual, hospital)
-    cors_origins = list(dict.fromkeys([
-        *getattr(config_class, "CORS_ORIGINS", []),
-        config_class.FRONTEND_URL,
-        "http://127.0.0.1:5173",
-    ]))
+    # Enable CORS for React frontend portals (local dev + Stage 2 S3 website)
+    cors_origins = list(dict.fromkeys(
+        origin.rstrip("/")
+        for origin in [
+            *getattr(config_class, "CORS_ORIGINS", []),
+            config_class.FRONTEND_URL,
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://raktsetu-web-harsh-2026.s3-website-us-east-1.amazonaws.com",
+        ]
+        if origin
+    ))
     CORS(
         app,
         resources={r"/api/*": {"origins": cors_origins}},

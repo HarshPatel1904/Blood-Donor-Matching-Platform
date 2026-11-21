@@ -16,7 +16,9 @@ def get_repository() -> BaseRepository:
         if Config.DATABASE_BACKEND == "sqlite":
             _repository_instance = SQLiteRepository()
         elif Config.DATABASE_BACKEND == "dynamodb":
-            raise NotImplementedError("DynamoDB backend will be configured in Stage 2 during AWS deployment.")
+            from app.repositories.dynamodb_repository import DynamoDBRepository
+
+            _repository_instance = DynamoDBRepository()
         else:
             raise ValueError(f"Unsupported DATABASE_BACKEND: {Config.DATABASE_BACKEND}")
     return _repository_instance
