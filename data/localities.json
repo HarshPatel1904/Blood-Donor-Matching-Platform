@@ -1,0 +1,77 @@
+{
+  "city": "Ahmedabad",
+  "state": "Gujarat",
+  "country": "India",
+  "localities": [
+    {
+      "locality_id": "ahm_navrangpura",
+      "name": "Navrangpura",
+      "pincode": "380009",
+      "latitude": 23.0365,
+      "longitude": 72.5611
+    },
+    {
+      "locality_id": "ahm_satellite",
+      "name": "Satellite",
+      "pincode": "380015",
+      "latitude": 23.0304,
+      "longitude": 72.5178
+    },
+    {
+      "locality_id": "ahm_vastrapur",
+      "name": "Vastrapur",
+      "pincode": "380052",
+      "latitude": 23.0350,
+      "longitude": 72.5293
+    },
+    {
+      "locality_id": "ahm_maninagar",
+      "name": "Maninagar",
+      "pincode": "380008",
+      "latitude": 22.9978,
+      "longitude": 72.6033
+    },
+    {
+      "locality_id": "ahm_bopal",
+      "name": "Bopal",
+      "pincode": "380058",
+      "latitude": 23.0338,
+      "longitude": 72.4634
+    },
+    {
+      "locality_id": "ahm_thaltej",
+      "name": "Thaltej",
+      "pincode": "380059",
+      "latitude": 23.0500,
+      "longitude": 72.5167
+    },
+    {
+      "locality_id": "ahm_chandkheda",
+      "name": "Chandkheda",
+      "pincode": "382424",
+      "latitude": 23.1090,
+      "longitude": 72.5849
+    },
+    {
+      "locality_id": "ahm_paldi",
+      "name": "Paldi",
+      "pincode": "380007",
+      "latitude": 23.0131,
+      "longitude": 72.5625
+    },
+    {
+      "locality_id": "ahm_gota",
+      "name": "Gota",
+      "pincode": "382481",
+      "latitude": 23.0984,
+      "longitude": 72.5317
+    },
+    {
+      "locality_id": "ahm_sghighway",
+      "name": "SG Highway",
+      "pincode": "380054",
+      "latitude": 23.0550,
+      "longitude": 72.5050
+    }
+  ]
+}

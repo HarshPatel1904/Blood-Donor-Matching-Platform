@@ -1,0 +1,319 @@
+:root {
+  --blood-primary: #c92a2a;
+  --blood-primary-hover: #a61e1e;
+  --blood-subtle: #ffe3e3;
+  --blood-dark: #212529;
+  --surface-bg: #f8f9fa;
+  --card-border: #e9ecef;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--surface-bg);
+  color: var(--blood-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Custom Healthcare Brand Accents */
+.btn-blood {
+  background-color: var(--blood-primary);
+  border-color: var(--blood-primary);
+  color: #ffffff;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-blood:hover, .btn-blood:focus {
+  background-color: var(--blood-primary-hover);
+  border-color: var(--blood-primary-hover);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(201, 42, 42, 0.25);
+}
+
+.btn-outline-blood {
+  color: var(--blood-primary);
+  border-color: var(--blood-primary);
+  font-weight: 500;
+}
+
+.btn-outline-blood:hover {
+  background-color: var(--blood-primary);
+  color: #ffffff;
+}
+
+.text-blood {
+  color: var(--blood-primary) !important;
+}
+
+.bg-blood-subtle {
+  background-color: var(--blood-subtle) !important;
+}
+
+/* Elevated Cards */
+.card-healthcare {
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-healthcare:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Dashboard Sidebar Styling */
+.dashboard-sidebar {
+  background-color: #ffffff;
+  border-right: 1px solid var(--card-border);
+  min-height: calc(100vh - 60px);
+}
+
+.dashboard-sidebar .nav-link {
+  color: #495057;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 0.65rem 1rem;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.dashboard-sidebar .nav-link:hover {
+  background-color: var(--surface-bg);
+  color: var(--blood-primary);
+}
+
+.dashboard-sidebar .nav-link.active {
+  background-color: var(--blood-subtle);
+  color: var(--blood-primary);
+  font-weight: 600;
+}
+
+/* Toast Alerts Container */
+.toast-container-fixed {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 1080;
+  min-width: 320px;
+  max-width: 440px;
+}
+
+/* ==========================================================================
+   PURE CENTERED LIQUID BLOOD DROP TRANSITION (NO TEXT / NO CARDS)
+   ========================================================================== */
+
+/* Full-Screen Frosted Backdrop */
+.blood-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(10, 15, 29, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: overlayFadeIn 0.4s ease-out forwards;
+}
+
+/* Centered Stage */
+.blood-drop-stage {
+  position: relative;
+  width: 180px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Deep Ambient Red Backlight */
+.blood-ambient-glow {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(224, 49, 49, 0.45) 0%, rgba(201, 42, 42, 0.15) 50%, rgba(0, 0, 0, 0) 75%);
+  animation: glowBreathe 3s infinite ease-in-out;
+}
+
+/* Fluid Ripple Rings on Surface */
+.blood-ripple-ring {
+  position: absolute;
+  bottom: 22px;
+  width: 120px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(224, 49, 49, 0.5);
+  background: radial-gradient(ellipse, rgba(201, 42, 42, 0.3) 0%, rgba(201, 42, 42, 0) 70%);
+  animation: surfaceRipples 2.6s infinite ease-out;
+}
+
+.blood-ripple-ring:nth-child(2) {
+  animation-delay: 1.3s;
+}
+
+/* Realistic SVG Liquid Droplet */
+.pure-blood-drop-svg {
+  width: 88px;
+  height: 116px;
+  filter: drop-shadow(0 14px 22px rgba(180, 10, 10, 0.65));
+  animation: liquidDropCycle 5.5s infinite ease-in-out;
+  transform-origin: center 85%;
+  position: relative;
+  z-index: 2;
+}
+
+/* Dynamic Specular Sheen */
+.drop-fluid-sheen {
+  opacity: 0.85;
+  animation: sheenGlide 2.8s infinite ease-in-out;
+}
+
+/* KEYFRAMES (5.5s Graceful Cycle) */
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes glowBreathe {
+  0%, 100% {
+    transform: scale(0.9);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.85;
+  }
+}
+
+@keyframes surfaceRipples {
+  0% {
+    transform: scale(0.3);
+    opacity: 0.9;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes liquidDropCycle {
+  0% {
+    transform: translateY(-40px) scale(0.7, 1.25);
+    opacity: 0.2;
+  }
+  15% {
+    transform: translateY(0px) scale(1.18, 0.86);
+    opacity: 1;
+  }
+  24% {
+    transform: translateY(-12px) scale(0.94, 1.06);
+  }
+  32% {
+    transform: translateY(0px) scale(1.04, 0.96);
+  }
+  42% {
+    transform: scale(1);
+  }
+  52% {
+    /* Gentle Cardiac Pulse 1 */
+    transform: scale(1.12);
+  }
+  60% {
+    transform: scale(1);
+  }
+  68% {
+    /* Gentle Cardiac Pulse 2 */
+    transform: scale(1.08);
+  }
+  78% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes sheenGlide {
+  0%, 100% {
+    opacity: 0.85;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.35;
+    transform: translateY(2px);
+  }
+}
+
+/* Donor Availability Pill Button */
+.btn-availability-pill {
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.btn-availability-pill:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.btn-availability-live {
+  background: linear-gradient(135deg, #2b8a3e 0%, #198754 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(25, 135, 84, 0.32);
+}
+
+.btn-availability-live:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c92a2a 0%, #a61e1e 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(201, 42, 42, 0.35);
+}
+
+.btn-availability-paused {
+  background: linear-gradient(135deg, #c92a2a 0%, #e03131 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(201, 42, 42, 0.28);
+}
+
+.btn-availability-paused:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2b8a3e 0%, #198754 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(25, 135, 84, 0.35);
+}
+
+.status-pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #a9e34b;
+  box-shadow: 0 0 0 0 rgba(169, 227, 75, 0.75);
+  animation: livePulseDot 1.8s infinite;
+}
+
+@keyframes livePulseDot {
+  0% {
+    box-shadow: 0 0 0 0 rgba(169, 227, 75, 0.75);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(169, 227, 75, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(169, 227, 75, 0);
+  }
+}
