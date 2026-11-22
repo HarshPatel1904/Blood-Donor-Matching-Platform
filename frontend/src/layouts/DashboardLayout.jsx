@@ -1,6 +1,7 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { Navbar } from "../components/common/Navbar";
 import { useAuth } from "../context/AuthContext";
+import { getPortalConfig } from "../utils/portalConfig";
 import {
   LayoutDashboard,
   HeartHandshake,
@@ -14,6 +15,7 @@ import {
 
 export function DashboardLayout() {
   const { role } = useAuth();
+  const portal = getPortalConfig();
 
   const renderNavLinks = () => {
     switch (role) {
@@ -86,12 +88,24 @@ export function DashboardLayout() {
           <aside className="col-12 col-md-3 col-lg-2 p-3 dashboard-sidebar">
             <div className="text-uppercase small fw-bold text-muted mb-2 px-2">Navigation</div>
             <nav className="nav flex-row flex-md-column flex-wrap gap-1">{renderNavLinks()}</nav>
+            {(portal.isDirectAdmin || role === "admin") && (
+              <div className="mt-3 px-2">
+                <span className="badge bg-light text-secondary border fw-normal">
+                  v1.1 &bull; CI/CD Live
+                </span>
+              </div>
+            )}
           </aside>
           <main className="col-12 col-md-9 col-lg-10 p-4">
             <Outlet />
           </main>
         </div>
       </div>
+      {!portal.isDirectAdmin && (
+        <footer className="py-2 text-center border-top bg-white">
+          <span className="text-muted small">v1.1 &bull; Auto-Deployed via CI/CD</span>
+        </footer>
+      )}
     </>
   );
 }
