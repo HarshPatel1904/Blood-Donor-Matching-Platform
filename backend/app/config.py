@@ -30,23 +30,35 @@ class Config:
     ALLOWED_EXTENSIONS = {"pdf", "png", "jpg", "jpeg"}
     
     # CORS
-    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
-    CORS_ORIGINS = [
+    _RAW_FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    FRONTEND_URLS = [
         origin.strip().rstrip("/")
-        for origin in os.getenv(
-            "CORS_ORIGINS",
-            "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:5175,http://127.0.0.1:5175,http://localhost:5176,http://127.0.0.1:5176,http://raktsetu-web-harsh-2026.s3-website-us-east-1.amazonaws.com"
-        ).split(",")
+        for origin in _RAW_FRONTEND_URL.split(",")
         if origin.strip()
     ]
-    ADMIN_PORTAL_ORIGINS = [
-        origin.strip().rstrip("/")
-        for origin in os.getenv(
-            "ADMIN_PORTAL_ORIGINS",
-            "http://localhost:5176,http://127.0.0.1:5176"
-        ).split(",")
-        if origin.strip()
-    ]
+    FRONTEND_URL = FRONTEND_URLS[0] if FRONTEND_URLS else "http://localhost:5173"
+    CORS_ORIGINS = list(dict.fromkeys([
+        *FRONTEND_URLS,
+        *[
+            origin.strip().rstrip("/")
+            for origin in os.getenv(
+                "CORS_ORIGINS",
+                "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:5175,http://127.0.0.1:5175,http://localhost:5176,http://127.0.0.1:5176,http://raktsetu-web-harsh-2026.s3-website-us-east-1.amazonaws.com"
+            ).split(",")
+            if origin.strip()
+        ],
+    ]))
+    ADMIN_PORTAL_ORIGINS = list(dict.fromkeys([
+        *[
+            origin.strip().rstrip("/")
+            for origin in os.getenv(
+                "ADMIN_PORTAL_ORIGINS",
+                "http://localhost:5176,http://127.0.0.1:5176"
+            ).split(",")
+            if origin.strip()
+        ],
+        *[u for u in FRONTEND_URLS if "admin" in u.lower()],
+    ]))
 
     # AWS configuration for Stage 2
     AWS_REGION = os.getenv("AWS_REGION", "us-east-1")

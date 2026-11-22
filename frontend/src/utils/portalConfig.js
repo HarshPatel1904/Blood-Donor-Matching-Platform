@@ -26,11 +26,19 @@ const PORTAL_BY_PORT = {
 };
 
 /**
- * Resolve portal metadata based on the current Vite server port so each role
- * runs on an isolated origin and tab label.
+ * Resolve portal metadata based on Vite mode, hostname, or port so each role
+ * works identically in both multi-port local dev and dedicated S3 deployments.
  */
 export function getPortalConfig() {
+  const mode = import.meta.env.VITE_PORTAL_MODE;
   const port = typeof window !== "undefined" ? window.location.port : "";
+  const hostname =
+    typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
+
+  if (mode === "admin" || port === "5176" || hostname.includes("admin")) {
+    return PORTAL_BY_PORT["5176"];
+  }
+
   return (
     PORTAL_BY_PORT[port] || {
       role: "donor",

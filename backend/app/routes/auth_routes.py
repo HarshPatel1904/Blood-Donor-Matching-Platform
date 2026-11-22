@@ -58,10 +58,14 @@ def login():
 
 @auth_bp.route("/admin-portal", methods=["POST"])
 def admin_portal_session():
-    """Establishes an admin session strictly for the dedicated local admin portal port."""
+    """Establishes an admin session strictly for configured admin portal origins."""
     origin = (request.headers.get("Origin") or "").rstrip("/")
-    if Config.APP_ENV != "local" or origin not in Config.ADMIN_PORTAL_ORIGINS:
-        return jsonify({"success": False, "error": "Direct admin portal access is restricted to the local admin port."}), 403
+    allowed_admin_origins = list(dict.fromkeys([
+        *Config.ADMIN_PORTAL_ORIGINS,
+        *[u for u in getattr(Config, "FRONTEND_URLS", []) if "admin" in u.lower()],
+    ]))
+    if origin not in allowed_admin_origins:
+        return jsonify({"success": False, "error": "Direct admin portal access is restricted to configured admin origins."}), 403
 
     success, message, result = auth_service.issue_local_admin_portal_session()
     if not success:

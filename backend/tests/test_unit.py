@@ -203,3 +203,33 @@ def test_s3_storage_service_upload_and_stream():
     assert dl_name.endswith("req.pdf")
     assert storage.get_file_stream("requisitions/../../.env") is None
 
+
+def test_multi_origin_cors_supports_comma_separated_frontend_url():
+    from app import create_app
+    from app.config import Config
+
+    class MultiOriginConfig(Config):
+        FRONTEND_URL = (
+            "http://raktsetu-web-harsh-2026.s3-website-us-east-1.amazonaws.com, "
+            "http://raktsetu-admin-harsh-2026.s3-website-us-east-1.amazonaws.com/"
+        )
+        FRONTEND_URLS = [
+            "http://raktsetu-web-harsh-2026.s3-website-us-east-1.amazonaws.com",
+            "http://raktsetu-admin-harsh-2026.s3-website-us-east-1.amazonaws.com",
+        ]
+
+    test_app = create_app(MultiOriginConfig)
+    client = test_app.test_client()
+
+    for origin in (
+        "http://localhost:5173",
+        "http://localhost:5176",
+        "http://raktsetu-web-harsh-2026.s3-website-us-east-1.amazonaws.com",
+        "http://raktsetu-admin-harsh-2026.s3-website-us-east-1.amazonaws.com",
+    ):
+        res = client.options(
+            "/api/health",
+            headers={"Origin": origin, "Access-Control-Request-Method": "GET"},
+        )
+        assert res.headers.get("Access-Control-Allow-Origin") == origin
+
