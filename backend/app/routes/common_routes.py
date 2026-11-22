@@ -20,7 +20,6 @@ def get_localities():
 def health_check():
     return jsonify({
         "status": "healthy",
-        "version": "1.1.0-cd",
         "env": Config.APP_ENV,
         "database": Config.DATABASE_BACKEND,
         "storage": Config.STORAGE_BACKEND,

@@ -235,5 +235,5 @@ def test_multi_origin_cors_supports_comma_separated_frontend_url():
 
     health_res = client.get("/api/health")
     assert health_res.status_code == 200
-    assert health_res.get_json().get("version") == "1.1.0-cd"
+    assert "version" not in health_res.get_json()
 
