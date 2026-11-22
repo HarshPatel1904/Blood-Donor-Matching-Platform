@@ -1,0 +1,87 @@
+name: RaktSetu CD
+
+on:
+  workflow_run:
+    workflows: ["RaktSetu CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build Main Web & Admin Portal bundles
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: http://3.223.61.108:5000/api
+        run: |
+          npm ci
+          npm run build
+          npm run build:admin
+
+      - name: Configure SSH & check EC2 availability
+        id: check_ec2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          if [ -z "${EC2_HOST}" ] || [ -z "${EC2_SSH_KEY}" ]; then
+            echo "EC2_HOST or EC2_SSH_KEY secret is not configured. Skipping deployment."
+            echo "reachable=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          mkdir -p ~/.ssh
+          printf '%s\n' "${EC2_SSH_KEY}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          if ! nc -z -w 5 "${EC2_HOST}" 22; then
+            echo "EC2 host ${EC2_HOST}:22 is unreachable (AWS Academy Learner Lab may be stopped). Exiting without error."
+            echo "reachable=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          ssh-keyscan -H "${EC2_HOST}" >> ~/.ssh/known_hosts 2>/dev/null || true
+          echo "reachable=true" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Main & Admin frontend bundles to EC2
+        if: steps.check_ec2.outputs.reachable == 'true'
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "ubuntu@${EC2_HOST}" "rm -rf /tmp/web-dist /tmp/admin-dist"
+          scp -r -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no frontend/dist "ubuntu@${EC2_HOST}:/tmp/web-dist"
+          scp -r -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no frontend/dist-admin "ubuntu@${EC2_HOST}:/tmp/admin-dist"
+
+      - name: Deploy backend, sync S3 buckets & restart service
+        if: steps.check_ec2.outputs.reachable == 'true'
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "ubuntu@${EC2_HOST}" 'bash -s' <<'ENDSSH'
+          set -euo pipefail
+          cd /home/ubuntu/Blood-Donor-Matching-Platform
+          git pull origin main
+          /home/ubuntu/Blood-Donor-Matching-Platform/backend/venv/bin/pip install -r /home/ubuntu/Blood-Donor-Matching-Platform/backend/requirements.txt awscli
+          /home/ubuntu/Blood-Donor-Matching-Platform/backend/venv/bin/aws s3 sync /tmp/web-dist/ s3://raktsetu-web-harsh-2026 --delete
+          /home/ubuntu/Blood-Donor-Matching-Platform/backend/venv/bin/aws s3 sync /tmp/admin-dist/ s3://raktsetu-admin-harsh-2026 --delete
+          rm -rf /tmp/web-dist /tmp/admin-dist
+          sudo systemctl restart raktsetu
+          sleep 2
+          curl -fsS http://localhost:5000/api/health
+          ENDSSH
